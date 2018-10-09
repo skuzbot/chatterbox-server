@@ -1,7 +1,7 @@
 var app = {
   //TODO: The current 'handleUsernameClick' function just toggles the class 'friend'
   //to all messages sent by the user
-  server: "http://127.0.0.1:3000/classes/messages",
+  server: 'http://127.0.0.1:3000/classes/messages',
   username: "anonymous",
   roomname: "lobby",
   lastMessageId: 0,
@@ -10,7 +10,7 @@ var app = {
 
   init: function() {
     // Get username
-    app.username = "Steven" || window.location.search.substr(10);
+    app.username = "Me"; //|| window.location.search.substr(10);
 
     // Cache jQuery selectors
     app.$message = $("#message");
@@ -24,8 +24,8 @@ var app = {
     app.$roomSelect.on("change", app.handleRoomChange);
 
     // Fetch previous messages
-    app.startSpinner();
-    app.fetch(false);
+    //app.startSpinner();
+    //app.fetch(false);
 
     // Poll for new messages
     setInterval(function() {
@@ -34,7 +34,8 @@ var app = {
   },
 
   send: function(message) {
-    app.startSpinner();
+    console.log('send ran');
+    //app.startSpinner();
 
     // POST the message to the server
     $.ajax({
@@ -47,7 +48,7 @@ var app = {
         app.$message.val("");
 
         // Trigger a fetch to update the messages, pass true to animate
-        app.fetch();
+        app.fetch(true);
       },
       error: function(error) {
         console.error("chatterbox: Failed to send message", error);
@@ -56,11 +57,13 @@ var app = {
   },
 
   fetch: function(animate) {
+    //console.log('fetch ran');
     $.ajax({
       url: app.server,
       type: "GET",
       //data: { order: '-createdAt' },
       success: function(data) {
+        console.log(data.results);
         // Don't bother if we have nothing to work with
         if (!data.results || !data.results.length) {
           return;
@@ -71,7 +74,7 @@ var app = {
 
         // Get the last message
         var mostRecentMessage = data.results[data.results.length - 1];
-
+        console.log('mostRecentMessages: ', mostRecentMessage);
         // Only bother updating the DOM if we have a new message
         if (mostRecentMessage.objectId !== app.lastMessageId) {
           // Update the UI with the fetched rooms
@@ -87,6 +90,7 @@ var app = {
         console.log("sucess");
       },
       error: function(error) {
+        console.log(data.results);
         console.error("chatterbox: Failed to fetch messages", error);
       }
     });
@@ -97,6 +101,7 @@ var app = {
   },
 
   renderMessages: function(messages, animate) {
+    console.log('Render Messages Called');
     // Clear existing messages`
     app.clearMessages();
     app.stopSpinner();
@@ -150,6 +155,7 @@ var app = {
   },
 
   renderMessage: function(message) {
+    console.log('Render Message Called');
     if (!message.roomname) {
       message.roomname = "lobby";
     }
@@ -224,7 +230,7 @@ var app = {
       text: app.$message.val(),
       roomname: app.roomname || "lobby"
     };
-
+    console.log('from handleSubmit');
     app.send(message);
 
     // Stop the form from submitting
