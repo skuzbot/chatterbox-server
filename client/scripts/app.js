@@ -1,27 +1,27 @@
 var app = {
   //TODO: The current 'handleUsernameClick' function just toggles the class 'friend'
   //to all messages sent by the user
-  server: "http://127.0.0.1:3000/classes/messsages",
-  username: "anonymous",
-  roomname: "lobby",
+  server: 'http://127.0.0.1:3000/classes/messsages',
+  username: 'anonymous',
+  roomname: 'lobby',
   lastMessageId: 0,
   friends: {},
   messages: [],
 
   init: function() {
     // Get username
-    app.username = window.location.search.substr(10);
+    app.username = 'Steven' || window.location.search.substr(10);
 
     // Cache jQuery selectors
-    app.$message = $("#message");
-    app.$chats = $("#chats");
-    app.$roomSelect = $("#roomSelect");
-    app.$send = $("#send");
+    app.$message = $('#message');
+    app.$chats = $('#chats');
+    app.$roomSelect = $('#roomSelect');
+    app.$send = $('#send');
 
     // Add listeners
-    app.$chats.on("click", ".username", app.handleUsernameClick);
-    app.$send.on("submit", app.handleSubmit);
-    app.$roomSelect.on("change", app.handleRoomChange);
+    app.$chats.on('click', '.username', app.handleUsernameClick);
+    app.$send.on('submit', app.handleSubmit);
+    app.$roomSelect.on('change', app.handleRoomChange);
 
     // Fetch previous messages
     app.startSpinner();
@@ -39,18 +39,18 @@ var app = {
     // POST the message to the server
     $.ajax({
       url: app.server,
-      type: "POST",
+      type: 'POST',
       data: JSON.stringify(message),
-      contentType: "application/json",
+      contentType: 'application/json',
       success: function(data) {
         // Clear messages input
-        app.$message.val("");
+        app.$message.val('');
 
         // Trigger a fetch to update the messages, pass true to animate
         app.fetch();
       },
       error: function(error) {
-        console.error("chatterbox: Failed to send message", error);
+        console.error('chatterbox: Failed to send message', error);
       }
     });
   },
@@ -58,8 +58,8 @@ var app = {
   fetch: function(animate) {
     $.ajax({
       url: app.server,
-      type: "GET",
-      data: { order: "-createdAt" },
+      type: 'GET',
+      data: { order: '-createdAt' },
       success: function(data) {
         // Don't bother if we have nothing to work with
         if (!data.results || !data.results.length) {
@@ -85,13 +85,13 @@ var app = {
         }
       },
       error: function(error) {
-        console.error("chatterbox: Failed to fetch messages", error);
+        console.error('chatterbox: Failed to fetch messages', error);
       }
     });
   },
 
   clearMessages: function() {
-    app.$chats.html("");
+    app.$chats.html('');
   },
 
   renderMessages: function(messages, animate) {
@@ -104,7 +104,7 @@ var app = {
         .filter(function(message) {
           return (
             message.roomname === app.roomname ||
-            (app.roomname === "lobby" && !message.roomname)
+            (app.roomname === 'lobby' && !message.roomname)
           );
         })
         .forEach(app.renderMessage);
@@ -112,7 +112,7 @@ var app = {
 
     // Make it scroll to the top
     if (animate) {
-      $("body").animate({ scrollTop: "0px" }, "fast");
+      $('body').animate({ scrollTop: '0px' }, 'fast');
     }
   },
 
@@ -139,7 +139,7 @@ var app = {
 
   renderRoom: function(roomname) {
     // Prevent XSS by escaping with DOM methods
-    var $option = $("<option/>")
+    var $option = $('<option/>')
       .val(roomname)
       .text(roomname);
 
@@ -149,7 +149,7 @@ var app = {
 
   renderMessage: function(message) {
     if (!message.roomname) {
-      message.roomname = "lobby";
+      message.roomname = 'lobby';
     }
 
     // Create a div to hold the chats
@@ -159,17 +159,17 @@ var app = {
     // Store the username in the element's data attribute
     var $username = $('<span class="username"/>');
     $username
-      .text(message.username + ": ")
-      .attr("data-roomname", message.roomname)
-      .attr("data-username", message.username)
+      .text(message.username + ': ')
+      .attr('data-roomname', message.roomname)
+      .attr('data-username', message.username)
       .appendTo($chat);
 
     // Add the friend class
     if (app.friends[message.username] === true) {
-      $username.addClass("friend");
+      $username.addClass('friend');
     }
 
-    var $message = $("<br><span/>");
+    var $message = $('<br><span/>');
     $message.text(message.text).appendTo($chat);
 
     // Add the message to the UI
@@ -178,7 +178,7 @@ var app = {
 
   handleUsernameClick: function(event) {
     // Get username from data attribute
-    var username = $(event.target).data("username");
+    var username = $(event.target).data('username');
 
     if (username !== undefined) {
       // Toggle friend
@@ -188,15 +188,15 @@ var app = {
       var selector = '[data-username="' + username.replace(/"/g, '\\"') + '"]';
 
       // Add 'friend' CSS class to all of that user's messages
-      var $usernames = $(selector).toggleClass("friend");
+      var $usernames = $(selector).toggleClass('friend');
     }
   },
 
   handleRoomChange: function(event) {
-    var selectIndex = app.$roomSelect.prop("selectedIndex");
+    var selectIndex = app.$roomSelect.prop('selectedIndex');
     // New room is always the first option
     if (selectIndex === 0) {
-      var roomname = prompt("Enter room name");
+      var roomname = prompt('Enter room name');
       if (roomname) {
         // Set as the current room
         app.roomname = roomname;
@@ -220,7 +220,7 @@ var app = {
     var message = {
       username: app.username,
       text: app.$message.val(),
-      roomname: app.roomname || "lobby"
+      roomname: app.roomname || 'lobby'
     };
 
     app.send(message);
@@ -230,12 +230,12 @@ var app = {
   },
 
   startSpinner: function() {
-    $(".spinner img").show();
-    $("form input[type=submit]").attr("disabled", "true");
+    $('.spinner img').show();
+    $('form input[type=submit]').attr('disabled', 'true');
   },
 
   stopSpinner: function() {
-    $(".spinner img").fadeOut("fast");
-    $("form input[type=submit]").attr("disabled", null);
+    $('.spinner img').fadeOut('fast');
+    $('form input[type=submit]').attr('disabled', null);
   }
 };

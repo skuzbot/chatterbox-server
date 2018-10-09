@@ -12,24 +12,20 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
-const url = require("url");
+const url = require('url');
 
 var defaultCorsHeaders = {
-  "access-control-allow-origin": "*",
-  "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "access-control-allow-headers": "content-type, accept",
-  "access-control-max-age": 30 // Seconds.
+  'access-control-allow-origin': '*',
+  'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'access-control-allow-headers': 'content-type, accept',
+  'access-control-max-age': 10 // Seconds.
 };
 
 var requestHandler = function(request, response) {
-  var data = {};
-  data.results = [
-    {
-      username: "shawndrost",
-      text: "trololo",
-      roomname: "lobby"
-    }
-  ];
+  var messages = {};
+  messages.results = [];
+
+  
 
   // Request and Response come from node's http module.
   //
@@ -56,18 +52,30 @@ var requestHandler = function(request, response) {
   //
   // You will need to change this if you are sending something
   // other than plain text, like JSON or HTML.
-  headers["Content-Type"] = "application/json";
+  headers['Content-Type'] = 'application/json';
 
-  console.log(request.url);
-  console.log(request.method);
+  if (request.url === '/classes/messages') {
+    if (request.method === 'GET') {
+      response.writeHead(200, 'application/json');
+      response.end(JSON.stringify(messages));
+      
+    } else if (request.method === 'POST') {
+      request.on('data', function(message) {
+        var message = JSON.parse(message);
+        messages.results.push(message);
+      });
 
-  if (request.url === "/classes/messages") {
-    if (request.method === "GET") {
-      response.writeHead(200, "application/json");
-      response.end(JSON.stringify(data));
-    } else if (request.method === "POST") {
-      console.log(request.end);
+      request.on('end', function() {
+        response.writeHead(201, 'application/json');
+        response.end(JSON.stringify(messages));
+      });
+      //done(data.results.push(response._postData));
+      //response.write(request._postData);
     }
+  } else {
+    response.writeHead(404, headers);
+    response.end('404 error not found');
+    
   }
 
   // .writeHead() writes to the request line and headers of the response,
@@ -83,7 +91,6 @@ var requestHandler = function(request, response) {
   // node to actually send all the data over to the client.
   //response.end("Hello, World!");
 };
-
 // These headers will allow Cross-Origin Resource Sharing (CORS).
 // This code allows this server to talk to websites that
 // are on different domains, for instance, your chat client.
