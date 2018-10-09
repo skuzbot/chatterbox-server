@@ -12,13 +12,13 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
-const url = require("url");
+const url = require('url');
 
 var defaultCorsHeaders = {
-  "access-control-allow-origin": "*",
-  "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "access-control-allow-headers": "content-type, accept",
-  "access-control-max-age": 10 // Seconds.
+  'access-control-allow-origin': '*',
+  'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'access-control-allow-headers': 'content-type, accept',
+  'access-control-max-age': 10 // Seconds.
 };
 
 const data = {};
@@ -51,37 +51,37 @@ var requestHandler = function(request, response) {
   // You will need to change this if you are sending something
   // other than plain text, like JSON or HTML.
 
-  console.log("request.methods is:", request.method, "on url: ", request.url);
+  console.log('request.methods is:', request.method, 'on url: ', request.url);
 
-  headers["Content-Type"] = "application/json";
+  headers['Content-Type'] = 'application/json';
 
-  if (request.url === "/classes/messages") {
-    if (request.method === "GET") {
-      response.writeHead(200, "application/json");
-      //console.log("get data: ", data);
+  if (request.url === '/classes/messages') {
+    if (request.method === 'GET') {
+      response.writeHead(200, 'application/json');
+      //console.log('get data: ', data);
       response.end(JSON.stringify(data));
-    } else if (request.method === "POST") {
-      request.on("data", function(message) {
+    } else if (request.method === 'POST') {
+      request.on('data', function(message) {
         var message = JSON.parse(message);
         data.results.push(message);
         //console.log(data);
       });
 
-      request.on("end", function() {
-        response.writeHead(201, "application/json");
-        response.end("success");
-        //console.log("success");
+      request.on('end', function() {
+        response.writeHead(201, 'application/json');
+        response.end('success');
+        //console.log('success');
       });
-    } else if (request.method === "OPTIONS") {
-      response.writeHead(200, "httpd/unix-directory");
-      response.end("OPTIOOOOONS??");
+    } else if (request.method === 'OPTIONS') {
+      response.writeHead(200, 'httpd/unix-directory');
+      response.end('OPTIOOOOONS??');
     }
     //done(data.results.push(response._postData));
     //response.write(request._postData);
   } else {
-    //console.log("************************", request);
+    //console.log('************************', request);
     response.writeHead(404, headers);
-    response.end("404 error not found");
+    response.end('404 error not found');
   }
 
   // .writeHead() writes to the request line and headers of the response,
@@ -93,9 +93,9 @@ var requestHandler = function(request, response) {
   // response.end() will be the body of the response - i.e. what shows
   // up in the browser.
   //
-  // Calling .end "flushes" the response's internal buffer, forcing
+  // Calling .end 'flushes' the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  //response.end("Hello, World!");
+  //response.end('Hello, World!');
 };
 // These headers will allow Cross-Origin Resource Sharing (CORS).
 // This code allows this server to talk to websites that
