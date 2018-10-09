@@ -21,9 +21,10 @@ var defaultCorsHeaders = {
   'access-control-max-age': 10 // Seconds.
 };
 
+const data = {};
+data.results = [];
+
 var requestHandler = function(request, response) {
-  var messages = {};
-  messages.results = [];
 
   
 
@@ -57,17 +58,20 @@ var requestHandler = function(request, response) {
   if (request.url === '/classes/messages') {
     if (request.method === 'GET') {
       response.writeHead(200, 'application/json');
-      response.end(JSON.stringify(messages));
+      console.log('get data: ', data);
+      response.end(JSON.stringify(data));
       
     } else if (request.method === 'POST') {
       request.on('data', function(message) {
         var message = JSON.parse(message);
-        messages.results.push(message);
+        data.results.push(message);
+        console.log(data);
       });
 
       request.on('end', function() {
         response.writeHead(201, 'application/json');
-        response.end(JSON.stringify(messages));
+        response.end('success');
+        console.log('success');
       });
       //done(data.results.push(response._postData));
       //response.write(request._postData);
