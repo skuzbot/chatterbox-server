@@ -12,22 +12,19 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
-const url = require('url');
+const url = require("url");
 
 var defaultCorsHeaders = {
-  'access-control-allow-origin': '*',
-  'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'access-control-allow-headers': 'content-type, accept',
-  'access-control-max-age': 10 // Seconds.
+  "access-control-allow-origin": "*",
+  "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "access-control-allow-headers": "content-type, accept",
+  "access-control-max-age": 10 // Seconds.
 };
 
 const data = {};
 data.results = [];
 
 var requestHandler = function(request, response) {
-
-  
-
   // Request and Response come from node's http module.
   //
   // They include information about both the incoming request, such as
@@ -53,33 +50,38 @@ var requestHandler = function(request, response) {
   //
   // You will need to change this if you are sending something
   // other than plain text, like JSON or HTML.
-  headers['Content-Type'] = 'application/json';
 
-  if (request.url === '/classes/messages') {
-    if (request.method === 'GET') {
-      response.writeHead(200, 'application/json');
-      console.log('get data: ', data);
+  console.log("request.methods is:", request.method, "on url: ", request.url);
+
+  headers["Content-Type"] = "application/json";
+
+  if (request.url === "/classes/messages") {
+    if (request.method === "GET") {
+      response.writeHead(200, "application/json");
+      //console.log("get data: ", data);
       response.end(JSON.stringify(data));
-      
-    } else if (request.method === 'POST') {
-      request.on('data', function(message) {
+    } else if (request.method === "POST") {
+      request.on("data", function(message) {
         var message = JSON.parse(message);
         data.results.push(message);
-        console.log(data);
+        //console.log(data);
       });
 
-      request.on('end', function() {
-        response.writeHead(201, 'application/json');
-        response.end('success');
-        console.log('success');
+      request.on("end", function() {
+        response.writeHead(201, "application/json");
+        response.end("success");
+        //console.log("success");
       });
-      //done(data.results.push(response._postData));
-      //response.write(request._postData);
+    } else if (request.method === "OPTIONS") {
+      response.writeHead(200, "httpd/unix-directory");
+      response.end("OPTIOOOOONS??");
     }
+    //done(data.results.push(response._postData));
+    //response.write(request._postData);
   } else {
+    //console.log("************************", request);
     response.writeHead(404, headers);
-    response.end('404 error not found');
-    
+    response.end("404 error not found");
   }
 
   // .writeHead() writes to the request line and headers of the response,
